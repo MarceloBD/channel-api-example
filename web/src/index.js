@@ -37,13 +37,18 @@ const App = () =>{
 
   const add = () => {
     console.log(addInput.value)
+    axios.post('http://localhost:3000/fruit', 
+      {name: addInput.value, quantity: parseInt((Math.random()*100).toString(), 10)})
+      .then(res => {  
+        setFruit(res.data)
+      }).catch(e => console.log(e));
 
-    client.send(JSON.stringify({
+   /* client.send(JSON.stringify({
       type: "contentchange",
       username: "marcelo",
       content: addInput.value
     }));
-
+*/
     
   }
 
