@@ -6,7 +6,9 @@ const websocket = require("websocket")
 const App = () =>{
   const [fruit, setFruit] = React.useState([]);
   const [event, setEvent] = React.useState({});
+  const stateRef = React.useRef();
 
+  stateRef.current = fruit; 
 
   const client = new websocket.w3cwebsocket('ws://localhost:3001');
 
@@ -16,18 +18,14 @@ const App = () =>{
       axios.get('http://localhost:3000/fruit').then(res => {
           setFruit(res.data)
       }).catch(e => console.log(e));
-      
+      console.log(stateRef)
       client.onopen = () => {
           console.log('WebSocket Client Connected');
         };
-      
         client.onmessage = (message) => {
           console.log(message)
           const dataFromServer = JSON.parse(message.data);
-          const stateToChange = {};
-          if (dataFromServer.type === "contentchange") {
-            setFruit(dataFromServer.data.fruitList);
-          }
+          setFruit([...stateRef.current, dataFromServer]);
       };
 
       

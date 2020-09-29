@@ -1,10 +1,12 @@
 import dotenv from 'dotenv';
 import { connection, server as WebSocketServer } from 'websocket';
 import http from 'http';
+import mongodb from 'mongodb';
 
 dotenv.config({  
   path: process.env.NODE_ENV === "PRODUCTION" ? ".env.production" : ".env"
 })
+
 
 const webSocketsServerPort = 3001;
 // Spinning the http server and the websocket server.
@@ -45,6 +47,10 @@ const typesDef = {
       clients[client].sendUTF(json);
     });
   }
+
+  const broadcast = (json: any) => {
+    wsServer.broadcastUTF(json);
+  }
   
 
 interface ClientDataType {
@@ -75,3 +81,18 @@ wsServer.on('request', request => {
   });
 
 });
+
+const main = async () =>{
+  const client = await mongodb.connect(process.env.MONGO_DB as string, {useUnifiedTopology: true});
+  const db = await client.db("channel");
+  const changeStream = db.collection("fruit").watch();
+  changeStream.on('change', next => {
+    if(next.operationType === 'insert'){
+      const json = next.fullDocument;
+      console.log(json)
+      broadcast(JSON.stringify(json));  
+    }
+  })
+}
+
+main();
