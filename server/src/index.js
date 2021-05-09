@@ -10,7 +10,7 @@ app.use(cors())
 app.use(bodyParser.json())
 
 const  startMongo = async () => {
-    const client = await mongodb.MongoClient.connect('mongodb+srv://@sandbox.xtesr.mongodb.net/test', {
+    const client = await mongodb.MongoClient.connect('mongodb+srv://marcelo:marcelo123@sandbox.xtesr.mongodb.net/test', {
         useUnifiedTopology: true
       });
     db = client.db('channel');
